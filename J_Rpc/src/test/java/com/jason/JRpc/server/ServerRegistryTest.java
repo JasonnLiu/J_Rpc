@@ -27,7 +27,7 @@ public class ServerRegistryTest {
 		si.setServerAddr("localhost:2182");
 		
 		sr.register(si); 
-		
+		 
 		
 		
 	}

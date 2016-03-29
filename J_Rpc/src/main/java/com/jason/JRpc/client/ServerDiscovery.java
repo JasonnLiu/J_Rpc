@@ -18,8 +18,8 @@ public class ServerDiscovery {
 
 	private String serviceCenterAddr;
 
-	public ServerDiscovery(String s) {
-		this.serviceCenterAddr = s;
+	public ServerDiscovery(String serviceCenterAddr) {
+		this.serviceCenterAddr = serviceCenterAddr;
 	}
 
 	public String discover(InterfaceInfo interfaceInfo) {
