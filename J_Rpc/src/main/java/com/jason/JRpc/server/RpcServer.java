@@ -5,14 +5,23 @@ import java.util.Map;
 
 public class RpcServer implements JRpcServer {
 
-	private HashMap<String, Object> services;
+	private ServerRegistry serverRegistry;
+	private ServerInfo serverInfo;
+	
+	//key为代表某一种版本的接口，value为该特定接口的实现类
+	private HashMap<InterfaceInfo, Object> services;
+	
 
-	public HashMap<String, Object> getServices() {
+	public HashMap<InterfaceInfo, Object> getServices() {
 		return services;
 	}
 
-	public void setServices(HashMap<String, Object> services) {
+	public void setServices(HashMap<InterfaceInfo, Object> services) {
 		this.services = services;
+	}
+	
+	public RpcServer(ServerInfo serverInfo){
+		this.serverInfo = serverInfo;
 	}
 
 	public void start() {

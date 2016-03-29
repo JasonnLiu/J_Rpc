@@ -9,15 +9,20 @@
 	<bean id="serviceClient" class="Bootstrap.ServiceClient">
 		<property name="helloService" ref="helloServiceRpcProxy"></property>
 	</bean>
-	
+
 	<!-- 服务的代理类 ServiceProxy -->
-	<bean id="helloServiceRpcProxy" class="">
+	<bean id="helloServiceRpcProxy" class="服务代理类">
+		<constructor-arg name="interfaceInfo" ref="interfaceInfo"></constructor-arg>
+		<constructor-arg name="serverDiscovery" ref="serverDiscovery"></constructor-arg>
+	</bean>
+	<bean id="interfaceInfo">
 		<property name="interfaceName"></property>
 		<property name="version"></property>
 		<property name="group"></property>
 	</bean>
-	
-
+	<bean id="serverDiscovery" class="ServerDiscovery">
+		<constructor-arg name="serviceCenterAddr" value="${serviceCenterAddr}"></constructor-arg>
+	</bean>
 
 
 

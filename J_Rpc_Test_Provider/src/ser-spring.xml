@@ -15,7 +15,10 @@
 	</bean>
 
 	<!-- 服务注册组件 -->
-	<bean id="serviceRegistry"></bean>
+	
+	<bean id="serviceRegistry">
+		<constructor-arg name="serviceCenterAddr" value="${serviceCenterAddr}"></constructor-arg>
+	</bean>
 
 	<!-- rpc服务器 -->
 	<bean id="rpcServer" class="com.jason.JRpc.server.RpcServer">
