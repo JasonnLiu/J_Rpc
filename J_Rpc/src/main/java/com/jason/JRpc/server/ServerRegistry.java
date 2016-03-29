@@ -1,5 +1,5 @@
 package com.jason.JRpc.server;
 
-public class ServiceRegistry {
-
+public class ServerRegistry {
+	
 }
