@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,14 +28,15 @@ import com.jason.JRpc.util.RpcEncoder;
 
 public class RpcServer implements JRpcServer, ApplicationContextAware,
 		InitializingBean {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
+
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(RpcServer.class);
 
 	private ServerRegistry serverRegistry;
 	private ServerInfo serverInfo;
 
 	// key为代表某一种版本的接口，value为该特定接口的实现类
-	private HashMap<InterfaceInfo, Object> services;
+	private HashMap<InterfaceInfo, Object> services = new HashMap<InterfaceInfo, Object>();
 
 	public HashMap<InterfaceInfo, Object> getServices() {
 		return services;
@@ -48,60 +50,104 @@ public class RpcServer implements JRpcServer, ApplicationContextAware,
 		this.serverInfo = serverInfo;
 	}
 
+	public ServerRegistry getServerRegistry() {
+		return serverRegistry;
+	}
+
+	public void setServerRegistry(ServerRegistry serverRegistry) {
+		this.serverRegistry = serverRegistry;
+	}
+
 	public void start() {
 
 	}
 
 	public void setApplicationContext(ApplicationContext ctx)
 			throws BeansException {
+		LOGGER.debug("setCTX");
 		Map<String, Object> serviceBeanMap = ctx
 				.getBeansWithAnnotation(RpcService.class);
-		if (serviceBeanMap != null && serviceBeanMap.isEmpty()) {
+
+		if (serviceBeanMap != null && !serviceBeanMap.isEmpty()) {
 			for (Object bean : serviceBeanMap.values()) {
 				String interfaceName = bean.getClass()
 						.getAnnotation(RpcService.class).value().getName();
+				LOGGER.info(interfaceName);
+				LOGGER.info(bean.getClass().getName());
 				InterfaceInfo interfaceInfo = new InterfaceInfo();
 				interfaceInfo.setInterfaceName(interfaceName);
+				try {
+					String s = (String) bean.getClass().getMethod("hello", String.class).invoke(bean,"s");
+					System.out.println(s);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				services.put(interfaceInfo, bean);
 			}
+		} else {
+			LOGGER.error("getnoservice");
 		}
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel channel) throws Exception {
-                        channel.pipeline()
-                            .addLast(new RpcDecoder(RpcRequest.class)) // 将 RPC 请求进行解码（为了处理请求）
-                            .addLast(new RpcEncoder(RpcResponse.class)) // 将 RPC 响应进行编码（为了返回响应）
-                            .addLast(new RpcHandler(services)); // 处理 RPC 请求
-                    }
-                })
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		try {
+			ServerBootstrap bootstrap = new ServerBootstrap();
+			bootstrap
+					.group(bossGroup, workerGroup)
+					.channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						public void initChannel(SocketChannel channel)
+								throws Exception {
+							channel.pipeline()
+									.addLast(new RpcDecoder(RpcRequest.class)) // 将
+																				// RPC
+																				// 请求进行解码（为了处理请求）
+									.addLast(new RpcEncoder(RpcResponse.class)) // 将
+																				// RPC
+																				// 响应进行编码（为了返回响应）
+									.addLast(new RpcHandler(services)); // 处理
+																		// RPC
+																		// 请求
+						}
+					}).option(ChannelOption.SO_BACKLOG, 128)
+					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            String serverAddress = serverInfo.getServerAddr();
-            String[] array = serverAddress.split(":");
-            String host = array[0];
-            int port = Integer.parseInt(array[1]);
+			String serverAddress = serverInfo.getServerAddr();
+			String[] array = serverAddress.split(":");
+			String host = array[0];
+			int port = Integer.parseInt(array[1]);
 
-            ChannelFuture future = bootstrap.bind(host, port).sync();
-            LOGGER.debug("server started on port {}", port);
+			LOGGER.info("before bind");
+			ChannelFuture future = bootstrap.bind(host, port).sync();
+			LOGGER.info("after bind");
+			LOGGER.debug("server started on port {}", port);
 
-            if (serverRegistry != null) {
-                serverRegistry.register(serverInfo); // 注册服务地址
-            }
+			if (serverRegistry != null) {
+				serverRegistry.register(serverInfo); // 注册服务地址
+			}
 
-            future.channel().closeFuture().sync();
-        } finally {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
-        }
+			future.channel().closeFuture().sync();
+		} finally {
+			workerGroup.shutdownGracefully();
+			bossGroup.shutdownGracefully();
+
+		}
 	}
 
 }

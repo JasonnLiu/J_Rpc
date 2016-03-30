@@ -22,8 +22,8 @@ public class ServerRegistry {
 	
 	private String serviceCenterAddr;
 	
-	public ServerRegistry(String s ){
-		this.serviceCenterAddr = s;
+	public ServerRegistry(String serviceCenterAddr ){
+		this.serviceCenterAddr = serviceCenterAddr;
 	}
 	
 
@@ -76,9 +76,15 @@ public class ServerRegistry {
 					zk.create(path, data, Ids.OPEN_ACL_UNSAFE,
 							CreateMode.PERSISTENT);
 				} else {
+					/*
 					String s = new String(zk.getData(path, true, null));
+					LOGGER.debug(s);
 					s = s+";"+serverAddr;
+					LOGGER.debug(s);
 					zk.setData(path, s.getBytes(), -1);
+					*/
+					zk.setData(path, serverAddr.getBytes(), -1);
+					LOGGER.info(serverAddr);
 				}
 
 			} catch (KeeperException e) {

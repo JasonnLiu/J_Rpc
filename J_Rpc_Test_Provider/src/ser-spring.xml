@@ -9,24 +9,34 @@
 
 	<context:component-scan base-package="service" />
 	<context:property-placeholder location="classpath:config.properties" />
-	
+
 	<!-- 服务类 -->
 	<bean id="helloServiceImpl" class="service.HelloServiceImpl">
 	</bean>
+	
+	<bean id="helloService" class="com.jason.JRpc.server.InterfaceInfo">
+		<property name="interfaceName" value="service.HelloService"></property>
+	</bean>
+
+	<bean id="serverInfo" class="com.jason.JRpc.server.ServerInfo">
+		<property name="serverAddr"  value="${serverAddr}" />
+		<property name="interfaceInfo">
+			<list>
+				<ref bean="helloService"/>
+			</list>
+		</property>
+	</bean>
 
 	<!-- 服务注册组件 -->
-	
-	<bean id="serviceRegistry">
+
+	<bean id="serverRegistry" class="com.jason.JRpc.server.ServerRegistry">
 		<constructor-arg name="serviceCenterAddr" value="${serviceCenterAddr}"></constructor-arg>
 	</bean>
 
 	<!-- rpc服务器 -->
 	<bean id="rpcServer" class="com.jason.JRpc.server.RpcServer">
-		<property name="services">
-			<map>
-				<entry key="helloService" value-ref="helloServiceImpl" />
-			</map>
-		</property>
+		<constructor-arg name="serverInfo" ref="serverInfo"></constructor-arg>
+		<property name="serverRegistry" ref="serverRegistry"></property>
 	</bean>
 
 

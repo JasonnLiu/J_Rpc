@@ -5,11 +5,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jason.JRpc.entity.RpcRequest;
 import com.jason.JRpc.entity.RpcResponse;
 import com.jason.JRpc.server.InterfaceInfo;
 
 public class RpcProxy {
+	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(RpcProxy.class);
+	
 	private InterfaceInfo interfaceInfo;
 	private ServerDiscovery serverDiscovery;
 
@@ -43,13 +50,21 @@ public class RpcProxy {
 							client = new RpcClient(host,port);
 							
 						}
+						LOGGER.info("before send");
 						RpcResponse rep = null;
 						if(client != null){
 							rep = client.send(request);
 						}
+						if(rep == null){
+							LOGGER.info( "rep null" );
+						}
+						
 						if (rep.isError()) {
+							LOGGER.info( "throw Error" );
+							rep.getError().printStackTrace();
 	                        throw rep.getError();
 	                    } else {
+	                    	LOGGER.info( "return result" );
 	                        return rep.getResult();
 	                    }
 					}

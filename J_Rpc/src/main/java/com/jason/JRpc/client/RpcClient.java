@@ -1,5 +1,8 @@
 package com.jason.JRpc.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,6 +20,9 @@ import com.jason.JRpc.util.RpcDecoder;
 import com.jason.JRpc.util.RpcEncoder;
 
 public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
+	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(RpcClient.class);
 
 	private String host;
 	private String port;
@@ -48,14 +54,15 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
 
 			ChannelFuture future = bootstrap.connect(host, Integer.parseInt(port)).sync();
 			future.channel().writeAndFlush(req).sync();
-
+			LOGGER.info("wait");
 			synchronized (obj) {
 				obj.wait(); // 未收到响应，使线程等待
 			}
-
+			LOGGER.info("after wait");
 			if (response != null) {
 				future.channel().closeFuture().sync();
 			}
+			LOGGER.info(response.getRequestId());
 			return response;
 		} finally {
 			group.shutdownGracefully();
@@ -64,11 +71,19 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext arg0, RpcResponse arg1)
+	protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response)
 			throws Exception {
 		this.response = response;
 		synchronized (obj) {
 			obj.notifyAll(); // 收到响应，唤醒线程
 		}
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+			throws Exception {
+		LOGGER.info("exceptioncaught");
+		LOGGER.error("client caught exception", cause);
+        ctx.close();
 	}
 }

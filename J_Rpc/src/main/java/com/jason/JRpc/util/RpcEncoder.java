@@ -8,14 +8,20 @@ import com.jason.JRpc.entity.RpcResponse;
 
 public class RpcEncoder extends MessageToByteEncoder {
 
+	private Class<?> clazz;
+
 	public RpcEncoder(Class<?> clazz) {
-		// TODO Auto-generated constructor stub
+		this.clazz = clazz;
 	}
 
 	@Override
-	protected void encode(ChannelHandlerContext arg0, Object arg1, ByteBuf arg2)
+	protected void encode(ChannelHandlerContext ctx, Object in, ByteBuf out)
 			throws Exception {
-		// TODO Auto-generated method stub
+		if (clazz.isInstance(in)) {
+			byte[] data = SerializationUtil.serialize(in);
+			out.writeInt(data.length);
+			out.writeBytes(data);
+		}
 
 	}
 

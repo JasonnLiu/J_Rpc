@@ -15,6 +15,19 @@ public class InterfaceInfo {
 		this.interfaceName = interfaceName;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		
+		return super.equals(obj) || interfaceName.equals(((InterfaceInfo) obj).getInterfaceName());
+	}
+
+	@Override
+	public int hashCode() {
+		
+		return 1;
+	}
+
+	
 	
 	/*
 	private String version;

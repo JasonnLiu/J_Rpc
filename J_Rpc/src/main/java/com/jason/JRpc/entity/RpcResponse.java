@@ -31,8 +31,7 @@ public class RpcResponse {
 	}
 
 	public boolean isError() {
-		
-		return false;
+		return error != null;
 	}
 
 }

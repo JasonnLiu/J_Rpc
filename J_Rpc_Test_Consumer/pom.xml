@@ -30,6 +30,12 @@
 			<version>3.2.12.RELEASE</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- SLF4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -22,5 +22,7 @@ public class ServerInfo {
 	public void setInterfaceInfo(List<InterfaceInfo> interfaceInfo) {
 		this.interfaceInfo = interfaceInfo;
 	}
+	
+	
 
 }

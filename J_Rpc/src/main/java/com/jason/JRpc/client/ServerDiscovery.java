@@ -9,12 +9,17 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.Watcher.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jason.JRpc.server.Constant;
 import com.jason.JRpc.server.InterfaceInfo;
 import com.jason.JRpc.server.ServerInfo;
 
 public class ServerDiscovery {
+	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ServerDiscovery.class);
 
 	private String serviceCenterAddr;
 
@@ -68,6 +73,7 @@ public class ServerDiscovery {
 		}
 		String[] addrs = addr.split(";");
 		String s = addrs[ThreadLocalRandom.current().nextInt(addrs.length)];
+		LOGGER.info("discover:"+s);
 		return s ;
 	}
 	
