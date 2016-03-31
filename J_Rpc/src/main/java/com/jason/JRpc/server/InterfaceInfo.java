@@ -23,8 +23,7 @@ public class InterfaceInfo {
 
 	@Override
 	public int hashCode() {
-		
-		return 1;
+		return interfaceName.hashCode();
 	}
 
 	

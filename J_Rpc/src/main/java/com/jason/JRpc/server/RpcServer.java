@@ -76,25 +76,6 @@ public class RpcServer implements JRpcServer, ApplicationContextAware,
 				LOGGER.info(bean.getClass().getName());
 				InterfaceInfo interfaceInfo = new InterfaceInfo();
 				interfaceInfo.setInterfaceName(interfaceName);
-				try {
-					String s = (String) bean.getClass().getMethod("hello", String.class).invoke(bean,"s");
-					System.out.println(s);
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				services.put(interfaceInfo, bean);
 			}
 		} else {
@@ -136,13 +117,14 @@ public class RpcServer implements JRpcServer, ApplicationContextAware,
 			LOGGER.info("before bind");
 			ChannelFuture future = bootstrap.bind(host, port).sync();
 			LOGGER.info("after bind");
-			LOGGER.debug("server started on port {}", port);
+			LOGGER.info("server started on port {}", port);
 
 			if (serverRegistry != null) {
 				serverRegistry.register(serverInfo); // ×¢²á·þÎñµØÖ·
 			}
-
+			LOGGER.info("before close");
 			future.channel().closeFuture().sync();
+			LOGGER.info("after close");
 		} finally {
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();

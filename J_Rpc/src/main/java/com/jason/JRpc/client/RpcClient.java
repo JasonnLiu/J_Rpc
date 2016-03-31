@@ -60,7 +60,9 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
 			}
 			LOGGER.info("after wait");
 			if (response != null) {
+				LOGGER.info("before close");
 				future.channel().closeFuture().sync();
+				LOGGER.info("after close");
 			}
 			LOGGER.info(response.getRequestId());
 			return response;

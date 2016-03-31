@@ -28,7 +28,7 @@ public class ServerRegistry {
 	
 
 	public void register(ServerInfo serverInfo) {
-		if (serverInfo != null) {
+		if (serverInfo != null) {  
 			ZooKeeper zk = connectServiceCenter(serviceCenterAddr);
 			if (zk != null) {
 				createNode(zk, serverInfo);
