@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- services <bean id="serviceClient" class="Bootstrap.ServiceClient"> 
+		<property name="helloService" ref="helloServiceRpcProxy"></property> </bean> -->
+		
+	<context:property-placeholder location="classpath:config.properties" />
+	<!-- 服务的代理类 ServiceProxy -->
+	<bean id="helloServiceRpcProxy" class="com.jason.JRpc.client.RpcProxy">
+		<constructor-arg name="interfaceInfo" ref="interfaceInfo"></constructor-arg>
+		<constructor-arg name="serverDiscovery" ref="serverDiscovery"></constructor-arg>
+	</bean>
+	<bean id="interfaceInfo" class="com.jason.JRpc.server.InterfaceInfo">
+		<property name="interfaceName" value="HelloService"></property>
+	</bean>
+	<!-- <property name="version"></property> <property name="group"></property> -->
+	<bean id="serverDiscovery" class="com.jason.JRpc.client.ServerDiscovery">
+		<constructor-arg name="serviceCenterAddr" value="${serviceCenterAddr}"></constructor-arg>
+	</bean>
+
+
+</beans>
